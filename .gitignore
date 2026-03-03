@@ -10,5 +10,5 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-# Memory file (optional – your choice)
+# Memory file
 memory.txt
