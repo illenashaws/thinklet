@@ -19,8 +19,43 @@ def save_memory(data):
         file.flush()
         os.fsync(file.fileno())
 
+def ask_preferences(memory):
 
-def suggest_choice(choice1, choice2, stress, importance):
+    if "preferences" not in memory:
+
+        print(
+            "\nThinklet wants to know you better 🌱"
+        )
+
+        activity = input(
+            "What activity do you usually enjoy?\n> "
+        )
+
+        memory["preferences"] = {
+
+            "favorite_activity": activity
+
+        }
+
+        save_memory(memory)
+
+    return memory
+
+def suggest_choice(
+        choice1,
+        choice2,
+        stress,
+        importance,
+        memory
+    ):
+
+    favorite = ""
+    if "preferences" in memory:
+        favorite = memory[
+            "preferences"
+        ][
+            "favorite_activity"
+        ].lower()
 
     if stress >= 8 and importance >= 8:
 
@@ -61,17 +96,54 @@ def suggest_choice(choice1, choice2, stress, importance):
 
     else:
 
-        if "jog" in choice1.lower():
-            suggestion = choice1
-        elif "jog" in choice2.lower():
-            suggestion = choice2
-        else:
+        if favorite in choice1.lower():
+
             suggestion = choice1
 
-        reason = (
-            f"your stress level is manageable ({stress}/10), "
-            "so this feels like a good time to build momentum."
-        )
+            reason = (
+                f"you usually enjoy {favorite}, "
+                f"and your stress level is manageable "
+                f"({stress}/10)."
+            )
+
+        elif favorite in choice2.lower():
+
+            suggestion = choice2
+
+            reason = (
+                f"you usually enjoy {favorite}, "
+                f"and your stress level is manageable "
+                f"({stress}/10)."
+            )
+
+        elif "jog" in choice1.lower():
+
+            suggestion = choice1
+
+            reason = (
+                f"your stress level is manageable "
+                f"({stress}/10), "
+                "so momentum feels possible."
+            )
+
+        elif "jog" in choice2.lower():
+
+            suggestion = choice2
+
+            reason = (
+                f"your stress level is manageable "
+                f"({stress}/10), "
+                "so momentum feels possible."
+            )
+
+        else:
+
+            suggestion = choice1
+
+            reason = (
+                f"your stress level is manageable "
+                f"({stress}/10)."
+            )
 
     return suggestion, reason
 
@@ -81,6 +153,8 @@ def main():
     print("Thinklet is waking up... 🌤️")
 
     memory = load_memory()
+
+    memory = ask_preferences(memory)
 
     if "name" in memory:
 
@@ -132,7 +206,8 @@ def main():
             choice1,
             choice2,
             stress,
-            importance
+            importance,
+            memory
         )
 
         print(
